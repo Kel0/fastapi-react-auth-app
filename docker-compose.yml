@@ -1,0 +1,42 @@
+version: "3.3"
+
+services:
+  # react_app:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/React.Dockerfile
+  #   ports:
+  #     - "3150:3150"
+  #   env_file:
+  #     - ./frontend/.env
+  #   volumes:
+  #     - ./frontend:/app
+  #   restart: always
+
+  redis:
+    image: redis:latest
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Celery.Dockerfile
+    volumes:
+      - ./backend:/app
+    command: celery -A clubhouse.tasks worker -B --loglevel=info
+    links:
+      - redis
+    depends_on:
+      - redis
+    restart: always
+
+  clubhouse_api:
+    build:
+      context: .
+      dockerfile: docker/API.Dockerfile
+    ports:
+      - "4150:4150"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    restart: always

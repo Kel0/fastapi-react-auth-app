@@ -1,0 +1,4 @@
+Dear ${PERSON_NAME},
+
+Confirm your account with code:
+${CODE}
