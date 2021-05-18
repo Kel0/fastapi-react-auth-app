@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Generic, Optional, TypeVar
+from typing import Callable, Generic, Optional, TypeVar, Union
 
 from pydantic.generics import GenericModel
 
@@ -21,6 +21,15 @@ class MetaData:
     @staticmethod
     def fill(**kwargs):
         return MetaData(task=kwargs["task"], args=MetaDataArgs(**kwargs["args"]))
+
+
+@dataclass
+class CeleryTask:
+    name: Union[str, Callable]
+    state: bool
+
+    def update_state(self, status):
+        self.state = status
 
 
 class APIResponse(GenericModel, Generic[MSG]):
