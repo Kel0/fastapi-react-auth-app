@@ -20,7 +20,6 @@ class User(BaseModel):
     username = Column(String(length=255), unique=True)
     hashed_password = Column(Text, default=None)
     confirmed = Column(Boolean, default=False)
-    code = Column(Text, default=None)
 
     @classmethod
     def get_user(cls, username: str):
@@ -28,11 +27,11 @@ class User(BaseModel):
         return results[0] if len(results) else None
 
     @classmethod
-    def get_or_create(cls, username: str, email: str, code: str):
+    def get_or_create(cls, username: str, email: str):
         user = cls.get_user(username=username)
 
         if user is None:
-            user = cls.create(username=username, email=email, code=code)
+            user = cls.create(username=username, email=email)
             return user, True
 
         return user, False

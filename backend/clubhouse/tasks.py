@@ -1,5 +1,4 @@
 import logging
-import time
 from datetime import datetime, timedelta
 from typing import Callable, List, Union
 
@@ -115,9 +114,7 @@ def clean_users():
             if _user.confirmed:
                 continue
 
-            jwt_decoded = auth_handler.decode_token(_user.code)
-
-            if datetime.fromtimestamp(jwt_decoded.exp) < datetime.utcnow():
+            if datetime.fromisoformat(_user.created_at) < datetime.now():
                 logger.info(f"USER {_user.email} HAS BEEN DELETED")
                 _user.delete()
 
