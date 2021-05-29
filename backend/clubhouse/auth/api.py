@@ -19,9 +19,7 @@ def user_registration(new_user: BaseUser):
     personality
     """
     token = auth_handler.encode_token(f"{new_user.email}:{new_user.username}")
-    user, _status = User.get_or_create(
-        username=new_user.username, email=new_user.email, code=token
-    )
+    user, _status = User.get_or_create(username=new_user.username, email=new_user.email)
     if not _status:
         raise HTTPException(detail="User already exists", status_code=400)
 
@@ -63,16 +61,14 @@ def email_confirmation(new_user: UserTokenPayload):
 
     if user is None:
         raise HTTPException(detail="User is not exist", status_code=400)
-    if user.code != new_user.token:
-        raise HTTPException(detail="Confirmation token is not correct", status_code=401)
     if user.confirmed:
         raise HTTPException(detail="User already confirmed", status_code=400)
 
     verified_token_status = auth_handler.verify_token(
-        token=user.code, user_id=f"{new_user.email}:{new_user.username}"
+        token=new_user.token, user_id=f"{new_user.email}:{new_user.username}"
     )
     if not verified_token_status:
-        raise HTTPException(detail="Confirmation token is not correct", status_code=401)
+        raise HTTPException(detail="Confirmation token is not correct", status_code=400)
 
     user.confirmed = True
     user.update()
